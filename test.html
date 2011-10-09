@@ -10,12 +10,40 @@
 
 <body>
 
+<style type="text/css">
+.msj_error {
+    width: 500px;
+    background-color: #FF0000;
+    color: #FFF;
+    font-family: Verdana;
+    font-size: 10px;
+    border: 1px solid #FF8000;
+    padding: 3px;
+}
+
+</style>
+
 <script type="text/javascript" src="validate-form.js"></script>
 
-<input type="text" id="msj"><br>
-<input type="text" name="edt">
-<input type="button" onClick="validate_field('edt', {'method': 'max_lenght', 'lenght':10, 'msj_field_id':'msj', 'msj_error':'Error Campo demaciado Corto'})">
-    
+<script type="text/javascript">
+function validar() {
+    var validator = new Validator([
+        ['nombre', {'method': 'min_lenght', 'lenght':2, 'cont_id':'error', 'msj_error':'Error campo: Nombre demaciado Largo'}],
+        ['apellido', {'method': 'min_lenght', 'lenght':2, 'cont_id':'error', 'msj_error':'Error campo: Apellido demaciado Corto'}]
+        ]);
+    validator.eval_fields()
+}
+</script>
+
+<div id="error">
+</div>
+
+<form>
+<label>Nombre</label><input type="text" name="edt" id="nombre"><br />
+<label>Apellido</label><input type="text" name="edt" id="apellido"><br />
+<input type="button" value="Validar" onClick="validar()">
+</form>
+
 </body>
 
 </html>

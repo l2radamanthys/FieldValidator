@@ -1,67 +1,103 @@
-function validate_form(forn_name, field) {
+function Validator(argv) {
+    this.argv = argv;
     
+    this.eval_fields = function() {
+        // evalua los campos designados en argv
+        var error = false;
+        for (i in this.argv) {
+            //error = error && validate_field(this.argv[i][0], this.argv[i][1]);
+            validate_field(this.argv[i][0], this.argv[i][1]);
+        }
+    }
 }
 
 
-function validate_field(field_name, argv) {
-    var field = document.getElementsByName(field_name);
-    //set_mensaje(argv['msj_field_id'], argv['msj_error']);
+function validate_field(field_id, argv) {
+    //valida los campos
+    var field = document.getElementById(field_id);
+    var error = false;
     switch (argv['method']) {
         case 'max_lenght':
-            max_lenght(field_name, argv);
+            error = max_lenght(field_id, argv);
             break;
 
-       /* case 'min_lenght':
-            min_lenght(field, argv);
-            break;*/
-    
+        case 'min_lenght':
+            error = min_lenght(field_id, argv);
+            break;
+
+        case 'valid_email':
+            error = valid_mail(field_id, argv);
+            break;
+
+        case 'valid_date':
+            break;
+            
         default:
-            set_mensaje(argv['msj_field_id'], 'error methodo o argumentos ivalidos: ' + argv['method']);
+            set_mensaje(argv['cont_id'], 'error methodo o argumentos ivalidos: ' + argv['method']);
             break;
     }
+    return error;
 }
 
 
-function set_mensaje(field_id, text) {
+function set_mensaje(cont_id, text) {
+    //escribe un msj en el contenedor designado
+    var contenedor = document.getElementById(cont_id);
+    var parrafo = document.createElement('p');
+    parrafo.className = 'msj_error';
+    var contenido = document.createTextNode(text);
+    parrafo.appendChild(contenido);
+    contenedor.appendChild(parrafo);
+}
+
+
+/*****************************************
+ metodos de validacion
+*****************************************/
+
+function max_lenght(field_id, argv) {
+    //longitud maxima
     var field = document.getElementById(field_id);
-    msj.value = text;
-}
-
-
-//metodos de validacion
-function max_lenght(field_name, argv) {
-    /*
-     Valida la longitud de un campo
-     */
-    var field = document.getElementsByName(field_name);
     var error = false;
     if (argv['lenght'] != undefined)  {
-        if (field[0].value.length > argv['max_lenght']) {
-            set_mensaje(argv['msj_field_id'], argv['msj_error']);
+        if (argv['lenght'] < field.value.toString().length) {
             error = true;
-        }
-        else {
-            set_mensaje(argv['msj_field_id'], argv['lenght'] < field[0].value.length);
         }
     }
     if (error) {
-        set_mensaje(argv['msj_field_id'], argv['msj_error']);
+        set_mensaje(argv['cont_id'], argv['msj_error']);
     }
+    return error;
 }
-/**
-
-function min_lenght(field, argv) {
-    /*
-     Valida la longitud de un campo
-     *//*
+    
+function min_lenght(field_id, argv) {
+    //longitud minima
+    var field = document.getElementById(field_id);
     var error = false;
-    if (argv['lenght'] == undefined) {
-        if (field[0].value.lenght < argv['min_lenght']) {
+    if (argv['lenght'] != undefined)  {
+        if (argv['lenght'] > field.value.toString().length) {
             error = true;
         }
     }
     if (error) {
-        alert(argv['msj_error']);
+        set_mensaje(argv['cont_id'], argv['msj_error']);
     }
+    return error;
 }
-**/
+
+function valid_mail(field_id, argv) {
+    // validar una direcion de mail
+    var field = document.getElementById(field_id);
+    var texto = field.value.toString()
+    var error = false;
+    if (/^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/.test(texto)) {
+        error = false;
+    } else {
+        error = true;
+    }
+    if (error) {
+        set_mensaje(argv['cont_id'], argv['msj_error']);
+    }
+    return error;
+}
+
