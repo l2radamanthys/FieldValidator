@@ -1,22 +1,53 @@
+/**
+FielValidator
+--------------
+Autor: Ricardo D. Quiroga - L2Radamanthys@gmail.con
+status: Alfa
+Licencia: GPL2
+**/
+
+
 function Validator(argv) {
     //Clase base para validacion de Campos de Formularios
-    this.argv = argv;
+    this.form = document.getElementById(form_id);
     
     this.eval_fields = function() {
         // evalua los campos designados en argv
         var error = false;
         for (i in this.argv) {
-            //error = error && validate_field(this.argv[i][0], this.argv[i][1]);
-            validate_field(this.argv[i][0], this.argv[i][1]);
+            error = error && validate_field(this.argv[i][0], this.argv[i][1]);
+            //validate_field(this.argv[i][0], this.argv[i][1]);
         }
-        return error;
+        return (!error);
     }
 
+}
+
+
+function FormValidator(argv, form_id) {
+    //derivacion q permite validar formularios
+    this.argv = argv;
+    this.form = document.getElementById(form_id);
+
+    
+    this.eval_fields = function() {
+        // evalua los campos designados en argv
+        var error = false;
+        for (i in this.argv) {
+            error = error && validate_field(this.argv[i][0], this.argv[i][1]);
+            //validate_field(this.argv[i][0], this.argv[i][1]);
+        }
+        return (!error);
+    }
+
+    
     this.eval_and_send = function() {
         //evalua los campos, si son correctos envia el formulario
-        
+        if (this.eval_fields()) {
+            this.form.submit; //envia el formulario
+        }
     }
-}
+} 
 
 
 function validate_field(field_id, argv) {
