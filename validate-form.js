@@ -9,42 +9,60 @@ Licencia: GPL2
 
 function Validator(argv) {
     //Clase base para validacion de Campos de Formularios
-    this.form = document.getElementById(form_id);
+    this.argv = argv;
     
     this.eval_fields = function() {
         // evalua los campos designados en argv
         var error = false;
         for (i in this.argv) {
-            error = error && validate_field(this.argv[i][0], this.argv[i][1]);
-            //validate_field(this.argv[i][0], this.argv[i][1]);
+            result = validate_field(this.argv[i][0], this.argv[i][1]);
+            error = error || result;
         }
         return (!error);
+    }
+
+    this.clear_all_cont = function() {
+        //borra los nodos hijos de todos los contenedores
+        for (i in this.argv) {
+            reset_cont(this.argv[i][1]['cont_id'])
+        }
     }
 
 }
 
 
-function FormValidator(argv, form_id) {
+function FormValidator(form_id, argv) {
     //derivacion q permite validar formularios
     this.argv = argv;
     this.form = document.getElementById(form_id);
 
-    
     this.eval_fields = function() {
         // evalua los campos designados en argv
         var error = false;
         for (i in this.argv) {
-            error = error && validate_field(this.argv[i][0], this.argv[i][1]);
+            result = validate_field(this.argv[i][0], this.argv[i][1]);
+            error = error || result;
             //validate_field(this.argv[i][0], this.argv[i][1]);
         }
         return (!error);
+    }
+
+    this.clear_all_cont = function() {
+        //borra los nodos hijos de todos los contenedores
+        for (i in this.argv) {
+            reset_cont(this.argv[i][1]['cont_id'])
+        }
     }
 
     
     this.eval_and_send = function() {
         //evalua los campos, si son correctos envia el formulario
         if (this.eval_fields()) {
-            this.form.submit; //envia el formulario
+            this.form.submit(); //envia el formulario
+            return true;
+        }
+        else {
+            return false;
         }
     }
 } 
@@ -77,6 +95,12 @@ function validate_field(field_id, argv) {
             break;
             
         case 'valid_date':
+            error = false;
+            break;
+
+        case 'alert': //no comprueba nada emite un msj
+            set_mensaje(argv['cont_id'], 'Prueba: error intencional');
+            error = true;
             break;
             
         default:
@@ -104,7 +128,7 @@ function set_mensaje(cont_id, text) {
     //escribe un msj en el contenedor designado
     var contenedor = document.getElementById(cont_id);
     var parrafo = document.createElement('p');
-    parrafo.className = 'msj_error';
+    parrafo.className = 'field_error';
     var contenido = document.createTextNode(text);
     parrafo.appendChild(contenido);
     contenedor.appendChild(parrafo);
