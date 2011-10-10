@@ -1,4 +1,5 @@
 function Validator(argv) {
+    //Clase base para validacion de Campos de Formularios
     this.argv = argv;
     
     this.eval_fields = function() {
@@ -8,6 +9,12 @@ function Validator(argv) {
             //error = error && validate_field(this.argv[i][0], this.argv[i][1]);
             validate_field(this.argv[i][0], this.argv[i][1]);
         }
+        return error;
+    }
+
+    this.eval_and_send = function() {
+        //evalua los campos, si son correctos envia el formulario
+        
     }
 }
 
@@ -16,6 +23,7 @@ function validate_field(field_id, argv) {
     //valida los campos
     var field = document.getElementById(field_id);
     var error = false;
+    reset_cont(argv['cont_id']); //borro nodos hijos del contenedor de msj error
     switch (argv['method']) {
         case 'max_lenght':
             error = max_lenght(field_id, argv);
@@ -29,6 +37,14 @@ function validate_field(field_id, argv) {
             error = valid_mail(field_id, argv);
             break;
 
+        case 'cmp_field':
+            error = compare_field(field_id, argv);
+            break;
+
+        case 'valid_pass':
+            error = valid_pass(field_id, argv);
+            break;
+            
         case 'valid_date':
             break;
             
@@ -37,6 +53,19 @@ function validate_field(field_id, argv) {
             break;
     }
     return error;
+}
+
+
+function reset_cont(cont_id) {
+    //elimina todos los nodos hijos
+    var array_nodos = document.getElementById(cont_id).childNodes;
+    if (array_nodos != undefined)  {
+        for (var i=0; i < array_nodos.length; i++) {
+            if(array_nodos[i].nodeType == 1) {
+                array_nodos[i].parentNode.removeChild(array_nodos[i]);
+            }
+        }
+    }
 }
 
 
@@ -69,6 +98,7 @@ function max_lenght(field_id, argv) {
     }
     return error;
 }
+
     
 function min_lenght(field_id, argv) {
     //longitud minima
@@ -85,14 +115,48 @@ function min_lenght(field_id, argv) {
     return error;
 }
 
+
 function valid_mail(field_id, argv) {
     // validar una direcion de mail
     var field = document.getElementById(field_id);
+    //var reg_exp = /^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/;
+    var reg_exp = /^(.+\@.+\..+)$/;
     var texto = field.value.toString()
     var error = false;
-    if (/^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/.test(texto)) {
-        error = false;
-    } else {
+    if (!reg_exp.test(texto)) {
+        error = true;
+    }
+        
+    if (error) {
+        set_mensaje(argv['cont_id'], argv['msj_error']);
+    }
+    return error;
+}
+
+
+function valid_pass(field_id, argv) {
+    //valida un campo password para q no posea caracteres extraños
+    var field = document.getElementById(field_id);
+    var reg_exp = /(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{8,10})$/;
+    var texto = field.value.toString();
+    var error = false;
+    if (!reg_exp.test(texto)) {
+        error = true;
+    }
+    
+    if (error) {
+        set_mensaje(argv['cont_id'], argv['msj_error']);
+    }
+    return error;
+}
+
+
+function compare_field(field_id, argv) {
+    //compara si el texto contenido en 2 campos es igual
+    var field_a = document.getElementById(field_id);
+    var field_b = document.getElementById(argv['field_cmp']);
+    var error = false;
+    if (field_a.value.toString() != field_b.value.toString()) {
         error = true;
     }
     if (error) {
@@ -100,4 +164,5 @@ function valid_mail(field_id, argv) {
     }
     return error;
 }
+
 
