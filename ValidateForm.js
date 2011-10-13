@@ -4,68 +4,55 @@ FielValidator
 Autor: Ricardo D. Quiroga - L2Radamanthys@gmail.con
 status: Alfa
 Licencia: GPL2
+
+Esta version utilizara la libreria JQuery
+
 **/
 
 
-function Validator(argv) {
-    //Clase base para validacion de Campos de Formularios
-    this.argv = argv;
-    
-    this.eval_fields = function() {
-        // evalua los campos designados en argv
-        var error = false;
-        for (i in this.argv) {
-            result = validate_field(this.argv[i][0], this.argv[i][1]);
-            error = error || result;
-        }
-        return (!error);
-    }
 
-    this.clear_all_cont = function() {
-        //borra los nodos hijos de todos los contenedores
-        for (i in this.argv) {
-            reset_cont(this.argv[i][1]['cont_id'])
-        }
-    }
+//no se usara
+function clearCont(id) {
+    //borra todos los mensajes de error dentro del contenedor
+    //var cont = $("#" + id + " label");
+    var cont = $("#" + id);
+    cont.empty();
+}
+
+//no se usara
+function clearAllCont(argv) {
+    //borra todos los mensajes de error, tiene prob -.-
 
 }
 
+//no se usara
+function setMessaje(id, text) {
+    //agrega el mensaje al final del contenedor
+    var cont = $("#" + id);
+    clearCont(id);
+    cont.append("<p class='field_error'>" + text + "</p>");
+}
 
-function FormValidator(form_id, argv) {
-    //derivacion q permite validar formularios
-    this.argv = argv;
-    this.form = document.getElementById(form_id);
 
-    this.eval_fields = function() {
-        // evalua los campos designados en argv
-        var error = false;
-        for (i in this.argv) {
-            result = validate_field(this.argv[i][0], this.argv[i][1]);
-            error = error || result;
-            //validate_field(this.argv[i][0], this.argv[i][1]);
-        }
-        return (!error);
-    }
+function clearAllMsj() {
+    //borra todos los mensajes de error
+    $(".field_error").remove();
+}
 
-    this.clear_all_cont = function() {
-        //borra los nodos hijos de todos los contenedores
-        for (i in this.argv) {
-            reset_cont(this.argv[i][1]['cont_id'])
-        }
-    }
 
-    
-    this.eval_and_send = function() {
-        //evalua los campos, si son correctos envia el formulario
-        if (this.eval_fields()) {
-            this.form.submit(); //envia el formulario
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-} 
+function insertMessage(id, text) {
+    //inserta un mensaje despues de un elemento "campo de formulario" determinado
+    $("<p class='field_error'>" + text + "</p>").insertAfter("#" + id);
+}
+
+
+function validateField(argv) {
+    var field = $("#"+argv["field_id"]);
+    var error = false;
+    //clearCont(argv["cont_id"]);
+}
+
+
 
 
 function validate_field(field_id, argv) {

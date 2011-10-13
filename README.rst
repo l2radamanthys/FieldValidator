@@ -25,6 +25,7 @@ Los posibles argumentos para el parametro method son:
     - range_lengh
     - cmp_field
     - valid_mail
+    - valid_url
     - is_num
     - is_text
     - in_range

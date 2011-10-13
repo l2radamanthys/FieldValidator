@@ -6,12 +6,18 @@
 	<title>sin título</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta name="generator" content="Geany 0.20" />
+
+    
 </head>
 
 <body>
 
 <style type="text/css">
-.field_error { 
+body {
+    font-family: Verdana;
+}
+
+.field_error{ 
     width: 300px;
     background-color: #FF0000;
     color: #FFF;
@@ -20,41 +26,47 @@
     border: 1px solid #FF8000;
     padding: 3px;
     margin: 0px;
-    margin-top: 3px;
+    margin-top: 1px;
+    margin-bottom: -10px;
 }
+
 
 </style>
 
-<script type="text/javascript" src="validate-form.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="validateForm.js"></script>
 
 <script type="text/javascript">
 function validar() {
-    var validator = new Validator([
-        ['nombre', {'method': 'min_lenght', 'lenght':2, 'cont_id':'error_1', 'msj_error':'Error campo: Nombre demaciado Corto'}],
-        ['apellido', {'method': 'min_lenght', 'lenght':2, 'cont_id':'error_2', 'msj_error':'Error campo: Apellido demaciado Corto'}],
-        ['email', {'method': 'valid_email', 'cont_id':'error_3', 'msj_error':'Error Email Invalido'}],
-        ['pass_1', {'method': 'valid_pass', 'cont_id':'error_4', 'msj_error':'Error Caracteres invalidos'}],
-        ['pass_2', {'method': 'cmp_field', 'field_cmp':'pass_1','cont_id':'error_5', 'msj_error':'La Contraseña no coincide'}],
-        ]);
+    var validator = new Validator({
+        "nombre": { "method":"min_lenght", "lenght":2, "msj":"Error Campo" }
+        /*'nombre', {'method': 'min_lenght', 'lenght':2, 'cont_id':'error_1', 'msj_error':'Error campo: Nombre demaciado Corto'}],
+        'apellido', {'method': 'min_lenght', 'lenght':2, 'cont_id':'error_2', 'msj_error':'Error campo: Apellido demaciado Corto'}],
+        'email', {'method': 'valid_email', 'cont_id':'error_3', 'msj_error':'Error Email Invalido'}],
+        'pass_1', {'method': 'valid_pass', 'cont_id':'error_4', 'msj_error':'Error Caracteres invalidos'}],
+        'pass_2', {'method': 'cmp_field', 'field_cmp':'pass_1','cont_id':'error_5', 'msj_error':'La Contraseña no coincide'}],*/
+        });
     validator.eval_fields()
 }
 </script>
 
 
 <form action="" method="POST">
-<span id="error_1"></span>
+
 <label>Nombre:</label><input type="text" name="nombre" id="nombre"><br />
-<span id="error_2"></span>
+<span id="error_1"></span>
 <label>Apellido:</label><input type="text" name="apellido" id="apellido"><br />
-<span id="error_3"></span>
+<span id="error_2"></span>
 <label>Email:</label><input type="text" name="email" id="email"><br />
-<span id="error_4"></span>
+<span id="error_3"></span>
 <label>contraseña:</label><input type="text" name="password" id="pass_1"><br />
-<span id="error_5"></span>
+<span id="error_4"></span>
 <label>contraseña de nuevo:</label><input type="text" id="pass_2"><br />
+<div id="error_5"></span>
 <input type="button" value="Validar" onClick="validar()">
 
 </form>
+
 
 </body>
 
