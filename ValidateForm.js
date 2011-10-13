@@ -7,9 +7,80 @@ Licencia: GPL2
 
 Esta version utilizara la libreria JQuery
 
+Nota:
+-----
+por el momento esta version solo soporta 1 formulario por pagina
 **/
 
 
+function Validator(argvs) {
+    //clase validadora
+    this.argvs = argvs;
+
+
+    this.evalFields = function() {
+        clearAllMsj() //borro todos los mensajes de error
+        var error = false;
+        for (id in this.argvs) {
+            //error = error || validateField(id, this.argvs[id]);
+            validateField(id, this.argvs[id]);
+        }
+    }
+
+
+    this.evalAndSend = function(form) {
+        //si no encuentra errores envia el formulario
+        if (!this.evalFields()) {
+            $("#" + form).submit();
+        }
+    }
+}
+
+
+function validateField(id, argv) {
+    //valida un campo de acuerdo a los parametros pasados
+    var error = false;
+    switch (argv['method']) {
+        case "maxlength":
+            error = maxLenght(id, argv);
+            break;
+
+        case "minlenght":
+            error = minLenght(id, argv);
+            break;
+
+        case "rangelenght":
+            error = rangeLenght(id, argv);
+            break;
+
+
+        case "compare":
+            error = compare(id, argv);
+            break;
+
+        case "number":
+            error = number(id, argv);
+            break;
+
+        case "min":
+            error = Min(id, argv);
+            break;
+
+        case "max":
+            error = Max(id, argv);
+            break;
+
+        case "range":
+            error = range(id, argv);
+            break;
+    }
+    return error;
+}
+
+
+/*****************************************
+ Manejo de Mensajes
+*****************************************/
 
 //no se usara
 function clearCont(id) {
@@ -46,240 +117,166 @@ function insertMessage(id, text) {
 }
 
 
-function validateField(argv) {
-    var field = $("#"+argv["field_id"]);
-    var error = false;
-    //clearCont(argv["cont_id"]);
-}
-
-
-
-
-function validate_field(field_id, argv) {
-    //valida los campos
-    var field = document.getElementById(field_id);
-    var error = false;
-    reset_cont(argv['cont_id']); //borro nodos hijos del contenedor de msj error
-    switch (argv['method']) {
-        case 'max_lenght':
-            error = max_lenght(field_id, argv);
-            break;
-
-        case 'min_lenght':
-            error = min_lenght(field_id, argv);
-            break;
-
-        case 'valid_email':
-            error = valid_mail(field_id, argv);
-            break;
-
-        case 'cmp_field':
-            error = compare_field(field_id, argv);
-            break;
-
-        case 'valid_pass':
-            error = valid_pass(field_id, argv);
-            break;
-            
-        case 'valid_date':
-            error = false;
-            break;
-
-        case 'is_num':
-            //error = is_num(field_id, argv)
-            break;
-
-        case 'is_text':
-            error = false;
-            break;
-
-        case 'range_lengh':
-            error = false;
-            break;
-
-        case 'in_range':
-            error = false;
-            break;
-            
-        case 'valid_url':
-            error = false;
-            break;
-
-        case 'alert': //no comprueba nada emite un msj
-            set_mensaje(argv['cont_id'], 'Prueba: error intencional');
-            error = true;
-            break;
-            
-        default:
-            set_mensaje(argv['cont_id'], 'error methodo o argumentos ivalidos: ' + argv['method']);
-            break;
-    }
-    return error;
-}
-
-
-function reset_cont(cont_id) {
-    //elimina todos los nodos hijos
-    var array_nodos = document.getElementById(cont_id).childNodes;
-    if (array_nodos != undefined)  {
-        for (var i=0; i < array_nodos.length; i++) {
-            if(array_nodos[i].nodeType == 1) {
-                array_nodos[i].parentNode.removeChild(array_nodos[i]);
-            }
-        }
-    }
-}
-
-
-function set_mensaje(cont_id, text) {
-    //escribe un msj en el contenedor designado
-    var contenedor = document.getElementById(cont_id);
-    var parrafo = document.createElement('p');
-    parrafo.className = 'field_error';
-    var contenido = document.createTextNode(text);
-    parrafo.appendChild(contenido);
-    contenedor.appendChild(parrafo);
-}
-
-
 /*****************************************
  metodos de validacion
 *****************************************/
 
-function max_lenght(field_id, argv) {
-    //longitud maxima
-    var field = document.getElementById(field_id);
-    var error = false;
-    if (argv['lenght'] != undefined)  {
-        if (argv['lenght'] < field.value.toString().length) {
-            error = true;
+function inArray(value, list) {
+    //si el elemento esta dentro de la lista
+    for (i in list) {
+        if (value == list[i]) {
+            return true;
         }
     }
-    if (error) {
-        set_mensaje(argv['cont_id'], argv['msj_error']);
-    }
-    return error;
+    return false;
 }
 
-    
-function min_lenght(field_id, argv) {
-    //longitud minima
-    var field = document.getElementById(field_id);
-    var error = false;
-    if (argv['lenght'] != undefined)  {
-        if (argv['lenght'] > field.value.toString().length) {
-            error = true;
+
+function validArgv(id, argv, request) {
+    //valida si el array posee los argumentos requeridos
+    error = false;
+    for (e in request) {
+        if (!inArray(request[e], argv)) {
+            insertMessage(id, "Parse Error Falta el Parametro: " + request[e]);
+            error= true;
         }
     }
-    if (error) {
-        set_mensaje(argv['cont_id'], argv['msj_error']);
-    }
     return error;
 }
 
 
-function valid_mail(field_id, argv) {
-    // validar una direcion de mail
-    var field = document.getElementById(field_id);
-    //var reg_exp = /^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/;
-    var reg_exp = /^(.+\@.+\..+)$/;
-    var texto = field.value.toString()
-    var error = false;
-    if (!reg_exp.test(texto)) {
-        error = true;
+function minLenght(id, argv) {
+    //longitud minima del campo de texto
+    var field = $("#" + id);
+    if (field.attr("value").length < argv["lenght"]) {
+        insertMessage(id, argv["msj"]);
+        return true;
     }
-        
-    if (error) {
-        set_mensaje(argv['cont_id'], argv['msj_error']);
+    else {
+        return false;
     }
-    return error;
 }
 
 
-function valid_pass(field_id, argv) { //no anda
-    //valida un campo password para q no posea caracteres extraños
-    var field = document.getElementById(field_id);
-    var reg_exp = /(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{8,10})$/;
-    var texto = field.value.toString();
-    var error = false;
-    if (!reg_exp.test(texto)) {
-        error = true;
+function maxLenght(id, argv) {
+    //longitud maxima del campo de texto
+    var field = $("#" + id);
+    if (field.attr("value").length > argv["lenght"]) {
+        insertMessage(id, argv["msj"]);
+        return true;
     }
-    
-    if (error) {
-        set_mensaje(argv['cont_id'], argv['msj_error']);
+    else {
+        return false;
     }
-    return error;
 }
 
 
-function compare_field(field_id, argv) {
-    //compara si el texto contenido en 2 campos es igual
-    var field_a = document.getElementById(field_id);
-    var field_b = document.getElementById(argv['field_cmp']);
-    var error = false;
-    if (field_a.value.toString() != field_b.value.toString()) {
-        error = true;
+function rangeLenght(id, argv) {
+    //si el valor se encuentra dentro del rango
+    var field = $("#" + id);
+    if ((field.attr("value").length < argv["min"]) || (field.attr("value").length > argv["max"])) {
+        insertMessage(id, argv["msj"]);
+        return true;
     }
-    if (error) {
-        set_mensaje(argv['cont_id'], argv['msj_error']);
+    else {
+        return false;
     }
-    return error;
 }
 
 
-function valid_date(field_id, argv) {
-    //valida un cam
-    return 1;
-}
-
-
-function is_num(field_id, argv) {
-    //valida si es un numero
-    var field_a = document.getElementById(field_id);
-    regex = /[0-9]$/
-    var texto = field.value.toString();
-    var error = false;
-    
-    if (!reg_exp.test(texto)) {
-        error = true;
+function compare(id, argv) {
+    //compara si dos campos son iguales
+    field_a = $("#" + id);
+    field_b = $("#" + argv["other"]);
+    if (field_a.attr("value") != field_b.attr("value")) {
+        insertMessage(id, argv["msj"]);
+        return true;
     }
-    
-    if (error) {
-        set_mensaje(argv['cont_id'], argv['msj_error']);
+    else {
+        return false;
     }
-    return error;
 }
 
 
-function is_text(field_id, argv) {
-    //si es solo texto a-z,A-Z,0-9
-    return 1;
-}
-
-
-function length_range(field_id, argv) {
-    //conpara si la long de text min <= len <= max 
-    var field = document.getElementById(field_id);
-    len = field.value.toString().length
-    if ((len < argv['min']) || (len > argv['max'])) {
-        error = true;
+function number(id, argv) {
+    //si es numero
+    var field = $("#" + id);
+    var number = parseInt(field.attr("value"));
+    if (isNaN(number)) {
+        insertMessage(id, argv["msj"]);
+        return true;
     }
-    
-    if (error) {
-        set_mensaje(argv['cont_id'], argv['msj_error']);
+    else {
+        return false;
     }
-    return error;
 }
 
 
-function in_range(field_id, argv) {
-    return 1;
+function Min(id, argv) {
+    //si es numero valor minimo
+    var field = $("#" + id);
+    var number = parseInt(field.attr("value"));
+    if (isNaN(number)) {
+        insertMessage(id, "Error el campo no Contiene un Valor Numerico");
+        return true;
+    }
+    else if(number < argv["min"]) {
+        insertMessage(id, argv["msj"]);
+        return true;  
+    }
+    else {
+        return false;
+    }
 }
 
-function valid_url(field_id, argv) {
-    return 1;
+function Max(id, argv) {
+    //si es numero valor maximo
+    var field = $("#" + id);
+    var number = parseInt(field.attr("value"));
+    if (isNaN(number)) {
+        insertMessage(id, "Error el campo no Contiene un Valor Numerico");
+        return true;
+    }
+    else if(number > argv["max"]) {
+        insertMessage(id, argv["msj"]);
+        return true;  
+    }
+    else {
+        return false;
+    }
 }
+
+
+function range(id, argv) {
+    //si el valor se encuentra dentro del rango
+    var field = $("#" + id);
+    var number = parseInt(field.attr("value"));
+    if (isNaN(number)) {
+        insertMessage(id, "Error el campo no Contiene un Valor Numerico");
+        return true;
+    }
+    else if ((number < argv["min"]) || (number > argv["max"])) {
+        insertMessage(id, argv["msj"]);
+        return true;  
+    }
+    else {
+        return false;
+    }
+}
+
+
+function mail(id, argv) {
+    //si es un mail valido
+    return false;
+}
+
+
+function url(id, argv) {
+    //si es una url valida
+    return false;
+}
+
+
 
 
 

@@ -37,34 +37,24 @@ body {
 <script type="text/javascript" src="validateForm.js"></script>
 
 <script type="text/javascript">
-function validar() {
-    var validator = new Validator({
-        "nombre": { "method":"min_lenght", "lenght":2, "msj":"Error Campo" }
-        /*'nombre', {'method': 'min_lenght', 'lenght':2, 'cont_id':'error_1', 'msj_error':'Error campo: Nombre demaciado Corto'}],
-        'apellido', {'method': 'min_lenght', 'lenght':2, 'cont_id':'error_2', 'msj_error':'Error campo: Apellido demaciado Corto'}],
-        'email', {'method': 'valid_email', 'cont_id':'error_3', 'msj_error':'Error Email Invalido'}],
-        'pass_1', {'method': 'valid_pass', 'cont_id':'error_4', 'msj_error':'Error Caracteres invalidos'}],
-        'pass_2', {'method': 'cmp_field', 'field_cmp':'pass_1','cont_id':'error_5', 'msj_error':'La Contraseña no coincide'}],*/
-        });
-    validator.eval_fields()
-}
+var validator = new Validator({
+    "nombre": { "method":"minlenght", "lenght":2, "msj":"Error Campo demaciado Corto" },
+    "apellido": { "method":"minlenght", "lenght":2, "msj":"Error Campo demaciado Corto" },
+    "password1": { "method":"rangelenght", "min":6, "max":16, "msj":"Error Campo debe tener entre 6 y 16 caracteres" },
+    "password2": {"method":"compare", "other":"password1", "msj":"Error la contraseña no coincide" },
+    "edad": { "method":"number", "msj":"Error El campo no contiene un valor Numerico" },
+});
 </script>
 
 
 <form action="" method="POST">
-
 <label>Nombre:</label><input type="text" name="nombre" id="nombre"><br />
-<span id="error_1"></span>
 <label>Apellido:</label><input type="text" name="apellido" id="apellido"><br />
-<span id="error_2"></span>
 <label>Email:</label><input type="text" name="email" id="email"><br />
-<span id="error_3"></span>
-<label>contraseña:</label><input type="text" name="password" id="pass_1"><br />
-<span id="error_4"></span>
-<label>contraseña de nuevo:</label><input type="text" id="pass_2"><br />
-<div id="error_5"></span>
-<input type="button" value="Validar" onClick="validar()">
-
+<label>contraseña:</label><input type="text" name="password" id="password1"><br />
+<label>contraseña de nuevo:</label><input type="text" id="password2"><br />
+<label>Edad:</label><input type="text" id="edad"><br />
+<input type="button" value="Validar" onClick="validator.evalFields()">
 </form>
 
 
