@@ -73,6 +73,14 @@ function validateField(id, argv) {
         case "range":
             error = range(id, argv);
             break;
+
+        case "mail":
+            error = mail(id, argv);
+            break;
+
+        case "url":
+            error = url(id, argv);
+            break;
     }
     return error;
 }
@@ -267,13 +275,27 @@ function range(id, argv) {
 
 function mail(id, argv) {
     //si es un mail valido
-    return false;
+    var field = $("#" + id);
+    var reg_exp =  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/;
+    if (reg_exp.test(field.attr("value"))) {
+        return false;
+    }
+    else {
+        return true;
+    }
 }
 
 
 function url(id, argv) {
     //si es una url valida
-    return false;
+    var field = $("#" + id);
+    var reg_exp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+    if (reg_exp.test(field.attr("value"))) {
+        return false;
+    }
+    else {
+        return true;
+    }
 }
 
 
