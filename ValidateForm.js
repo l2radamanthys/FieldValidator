@@ -22,16 +22,16 @@ function Validator(argvs) {
         clearAllMsj() //borro todos los mensajes de error
         var error = false;
         for (id in this.argvs) {
-            //error = error || validateField(id, this.argvs[id]);
-            validateField(id, this.argvs[id]);
+            error = error | validateField(id, this.argvs[id]);
         }
+        return error;
     }
 
 
-    this.evalAndSend = function(form) {
+    this.evalAndSend = function(form_id) {
         //si no encuentra errores envia el formulario
         if (!this.evalFields()) {
-            $("#" + form).submit();
+            $("#" + form_id).submit();
         }
     }
 }
